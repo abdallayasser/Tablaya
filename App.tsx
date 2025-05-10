@@ -28,7 +28,7 @@ export default function App() {
 
         // Pre-load images
         await Asset.loadAsync([
-          require('./src/assets/logo.png'),
+          require('./assets/images/icon.png'),
           // Add other assets here
         ]);
 
