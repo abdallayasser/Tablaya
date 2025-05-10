@@ -3,18 +3,21 @@ import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { Provider } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
-import * as SplashScreen from 'expo-splash-screen';
+import * as ExpoSplashScreen from 'expo-splash-screen';
 import * as Font from 'expo-font';
 import { Asset } from 'expo-asset';
 import { store, persistor } from './src/store';
 import AppNavigation from './src/navigation';
 import { COLORS } from './src/config/theme';
+import SplashScreen from './src/screens/shared/SplashScreen';
+import { View, Text } from 'react-native';
 
 // Keep the splash screen visible while we fetch resources
-SplashScreen.preventAutoHideAsync();
+ExpoSplashScreen.preventAutoHideAsync();
 
 export default function App() {
   const [appIsReady, setAppIsReady] = useState(false);
+  const [showSplash, setShowSplash] = useState(true);
 
   useEffect(() => {
     async function prepare() {
@@ -39,26 +42,32 @@ export default function App() {
       } finally {
         // Tell the application to render
         setAppIsReady(true);
+        
+        // Hide the Expo splash screen
+        await ExpoSplashScreen.hideAsync();
+        
+        // Show our custom splash screen for 2 seconds
+        setTimeout(() => {
+          setShowSplash(false);
+        }, 2000);
       }
     }
 
     prepare();
   }, []);
 
-  useEffect(() => {
-    if (appIsReady) {
-      // Hide the splash screen after resources are loaded
-      SplashScreen.hideAsync();
-    }
-  }, [appIsReady]);
-
   if (!appIsReady) {
     return null;
   }
 
+  // Show our custom splash screen
+  if (showSplash) {
+    return <SplashScreen />;
+  }
+
   return (
     <Provider store={store}>
-      <PersistGate loading={null} persistor={persistor}>
+      <PersistGate loading={<SplashScreen />} persistor={persistor}>
         <SafeAreaProvider>
           <StatusBar style="auto" backgroundColor={COLORS.primary} />
           <AppNavigation />

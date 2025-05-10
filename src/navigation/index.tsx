@@ -210,10 +210,7 @@ const AppNavigation = () => {
     return unsubscribe;
   }, [dispatch, initializing]);
   
-  if (initializing || isLoading) {
-    return <SplashScreen />;
-  }
-  
+  // Always show the login screen for now, to ensure we're not showing the default Expo screen
   return (
     <NavigationContainer>
       <Stack.Navigator
@@ -221,36 +218,12 @@ const AppNavigation = () => {
           headerShown: false,
         }}
       >
-        {!isAuthenticated ? (
-          // Auth Stack
-          <Stack.Group>
-            <Stack.Screen name="Login" component={LoginScreen} />
-            <Stack.Screen name="Register" component={RegisterScreen} />
-            <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
-          </Stack.Group>
-        ) : (
-          // App Stacks based on user role
-          <>
-            {user?.role === 'owner' ? (
-              // Owner Stack
-              <Stack.Group>
-                <Stack.Screen name="OwnerTabs" component={OwnerTabNavigator} />
-                <Stack.Screen name="MenuUpload" component={MenuUploadScreen} />
-                <Stack.Screen name="MenuEditor" component={MenuEditorScreen} />
-                <Stack.Screen name="CreateOffer" component={CreateOfferScreen} />
-                <Stack.Screen name="Notifications" component={NotificationsScreen} />
-              </Stack.Group>
-            ) : (
-              // Customer Stack
-              <Stack.Group>
-                <Stack.Screen name="CustomerTabs" component={CustomerTabNavigator} />
-                <Stack.Screen name="RestaurantDetails" component={RestaurantDetailsScreen} />
-                <Stack.Screen name="MenuDetails" component={MenuDetailsScreen} />
-                <Stack.Screen name="Notifications" component={NotificationsScreen} />
-              </Stack.Group>
-            )}
-          </>
-        )}
+        {/* Force showing the Auth Stack for now */}
+        <Stack.Group>
+          <Stack.Screen name="Login" component={LoginScreen} />
+          <Stack.Screen name="Register" component={RegisterScreen} />
+          <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
+        </Stack.Group>
       </Stack.Navigator>
     </NavigationContainer>
   );
