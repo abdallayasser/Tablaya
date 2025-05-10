@@ -19,6 +19,7 @@ import CustomerHomeScreen from '../screens/customer/HomeScreen';
 import CustomerExploreScreen from '../screens/customer/ExploreScreen';
 import CustomerFavoritesScreen from '../screens/customer/FavoritesScreen';
 import CustomerProfileScreen from '../screens/customer/ProfileScreen';
+import EditProfileScreen from '../screens/customer/EditProfileScreen';
 import RestaurantDetailsScreen from '../screens/customer/RestaurantDetailsScreen';
 import MenuDetailsScreen from '../screens/customer/MenuDetailsScreen';
 
@@ -210,7 +211,10 @@ const AppNavigation = () => {
     return unsubscribe;
   }, [dispatch, initializing]);
   
-  // Always show the login screen for now, to ensure we're not showing the default Expo screen
+  if (isLoading || initializing) {
+    return <SplashScreen />;
+  }
+  
   return (
     <NavigationContainer>
       <Stack.Navigator
@@ -218,12 +222,32 @@ const AppNavigation = () => {
           headerShown: false,
         }}
       >
-        {/* Force showing the Auth Stack for now */}
-        <Stack.Group>
-          <Stack.Screen name="Login" component={LoginScreen} />
-          <Stack.Screen name="Register" component={RegisterScreen} />
-          <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
-        </Stack.Group>
+        {!isAuthenticated ? (
+          // Auth Stack
+          <Stack.Group>
+            <Stack.Screen name="Login" component={LoginScreen} />
+            <Stack.Screen name="Register" component={RegisterScreen} />
+            <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
+          </Stack.Group>
+        ) : user?.role === 'owner' ? (
+          // Restaurant Owner Stack
+          <Stack.Group>
+            <Stack.Screen name="OwnerTabs" component={OwnerTabNavigator} />
+            <Stack.Screen name="MenuUpload" component={MenuUploadScreen} />
+            <Stack.Screen name="MenuEditor" component={MenuEditorScreen} />
+            <Stack.Screen name="CreateOffer" component={CreateOfferScreen} />
+            <Stack.Screen name="Notifications" component={NotificationsScreen} />
+          </Stack.Group>
+        ) : (
+          // Customer Stack
+          <Stack.Group>
+            <Stack.Screen name="CustomerTabs" component={CustomerTabNavigator} />
+            <Stack.Screen name="RestaurantDetails" component={RestaurantDetailsScreen} />
+            <Stack.Screen name="MenuDetails" component={MenuDetailsScreen} />
+            <Stack.Screen name="EditProfile" component={EditProfileScreen} />
+            <Stack.Screen name="Notifications" component={NotificationsScreen} />
+          </Stack.Group>
+        )}
       </Stack.Navigator>
     </NavigationContainer>
   );
